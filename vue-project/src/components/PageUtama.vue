@@ -2,15 +2,25 @@
 export default {
   data(){
     return {
-        images: [
-            "https://images.unsplash.com/photo-1738444515789-0a1a4c4982dc?q=80&w=2831&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "https://images.unsplash.com/photo-1738444515789-0a1a4c4982dc?q=80&w=2831&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "https://images.unsplash.com/photo-1738444515789-0a1a4c4982dc?q=80&w=2831&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        ],
+        images: [],
     };
   },
   methods: {
-    
+    async fetchImages() {
+      try {
+        const response = await fetch("http://localhost:8080/image"); 
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const responseBody = await response.json(); 
+        this.images = responseBody.data;
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
+    }
+  },
+  mounted() {
+    this.fetchImages(); // Fetch images when the component is mounted
   }
 };
 
@@ -23,8 +33,8 @@ export default {
     <div v-if="images.length === 0">No images found.
     </div>
     <div v-else>
-      <div v-for="(image, index) in images" :key="index">
-        <img :src="image" alt="Image" width="200" />
+      <div v-for="image in images" :key="image.id">
+        <img :src="image.url" alt="Image" width="200" />
       </div>
     </div>
 </template>
